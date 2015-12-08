@@ -239,7 +239,7 @@ function sendNMessages(){
   
 };
 
-setInterval(
+var spammers = setInterval(
   sendNMessages
   ,5000);
 
@@ -248,7 +248,10 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-var socket = http.listen(process.env.PORT,process.env.IP, function(){
+//problem might be here
+//process.env.PORT,process.env.IP use these parameters on c9
+var port = process.env.PORT || 5000
+var socket = http.listen(port, function(){
   console.log('listening on *:3000');
 });
 
@@ -270,6 +273,10 @@ io.on('connection', function(client){
     io.emit("update", people[client.id] + "has left the server");
     delete people[client.id];
     io.emit("update-people", people);
+  });
+  client.on("close", function(){
+    
+    clearInterval(spammers);
   });
 });
 
